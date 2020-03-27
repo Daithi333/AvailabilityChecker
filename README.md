@@ -1,1 +1,1 @@
-# AvailabilityChecker
+# AvailabilityChecker app
