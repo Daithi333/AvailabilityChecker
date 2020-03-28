@@ -2,15 +2,12 @@
 class FileReader:
     
     def __init__(self, filename):
-        self.open_file = open(filename)
-        self.urls = self._read_lines()
-        self._close()
+        self.filename = filename
 
-    def _read_lines(self):
+    def read_lines(self):
         lines = []
-        for line in self.open_file:
+        open_file = open(self.filename)
+        for line in open_file:
             lines.append(line)
+        open_file.close()
         return lines
-
-    def _close(self):
-        self.open_file.close()

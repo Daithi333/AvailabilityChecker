@@ -5,9 +5,6 @@ from bs4 import BeautifulSoup
 
 class HtmlHandler:
 
-    def __init__(self, urls):
-        self.urls = urls
-
     def scrape_html(self, urls):
         soup_list = []
         for url in urls:
@@ -16,7 +13,6 @@ class HtmlHandler:
             soup = BeautifulSoup(html, 'html.parser')
             soup_list.append(soup)
         return soup_list
-
 
     def get_products(self, soup_list):
         products = []
@@ -35,5 +31,5 @@ class HtmlHandler:
                 products.append(product)
         return products
     
-    def format_results(results):
+    def format_results(self, results):
         pass
