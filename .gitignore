@@ -6,8 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
-# beautiful souo
+# beautiful soup
 bs4/
+
+# pycharm
+.idea
 
 # Distribution / packaging
 .Python

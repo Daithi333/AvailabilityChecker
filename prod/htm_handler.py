@@ -34,3 +34,6 @@ class HtmlHandler:
                 }
                 products.append(product)
         return products
+    
+    def format_results(results):
+        pass
