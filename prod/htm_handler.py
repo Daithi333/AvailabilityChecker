@@ -24,18 +24,25 @@ class HtmlHandler:
         return products
 
     def _extract_product_info(self, panel):
+        price = panel.find('div', {'class': 'price-per-sellable-unit'}) or None
+        if price:
+            price = price.get_text().strip()
+        else:
+            return
+
         name = panel.find('h3').get_text().strip()
         image = panel.find('img', {'class': 'product-image'})['src']
-        info = panel.find('div', {'class': 'product-info-message'}).get_text().strip()
-        url = panel.find('h3').find('a')['href']
+        url = 'https://www.tesco.com/' + panel.find('h3').find('a')['href']
+        # info = panel.find('div', {'class': 'product-info-message'}).get_text().strip()
+
         product = {
             'name': name,
             'image': image,
-            'info': info,
+            'price': price,
             'url': url
         }
         return product
-    
+
     def _format_results(self, products):
 
         pass

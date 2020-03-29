@@ -10,7 +10,7 @@ context = "test context"
 
 
 @patch('index.Controller')
-def test_handler_calls_controller_process_with_event(fake_controller):
+def test_handler_calls_controller_process(fake_controller):
     spy_controller = fake_controller.return_value
     index.handler(event, context)
     spy_controller.process.assert_called()
