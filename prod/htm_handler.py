@@ -20,16 +20,15 @@ class HtmlHandler:
             panels = soup.find_all('li', {'class': 'product-list--list-item'})
             for panel in panels:
                 product = self._extract_product_info(panel)
-                products.append(product)
+                if product is not None:
+                    products.append(product)
         return products
 
     def _extract_product_info(self, panel):
         price = panel.find('div', {'class': 'price-per-sellable-unit'}) or None
-        if price:
-            price = price.get_text().strip()
-        else:
+        if price is None:
             return
-
+        price = price.get_text().strip()
         name = panel.find('h3').get_text().strip()
         image = panel.find('img', {'class': 'product-image'})['src']
         url = 'https://www.tesco.com/' + panel.find('h3').find('a')['href']
