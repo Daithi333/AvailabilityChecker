@@ -43,6 +43,34 @@ class HtmlHandler:
         }
         return product
 
-    def _format_results(self, products):
+    def format_results(self, products):
+        products_html = self._format_products(products)
 
-        pass
+        html_response = """\
+        <html>
+        <head>
+        </head>
+        <body>
+        <h2>The following products are available:</h2>
+        <table>
+        <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Link</th>
+        </tr>%s
+        </table>
+        </body>
+        </html>
+        """ % (products_html)
+        return html_response
+
+    def _format_products(self, products):
+        products_html = """"""
+        for product in products:
+            products_html += """
+        <tr>
+        <td>%s</td>
+        <td>%s</td>
+        <td><a href="%s">View</a></td>
+        </tr>""" % (product['name'], product['price'], product['url'])
+        return products_html

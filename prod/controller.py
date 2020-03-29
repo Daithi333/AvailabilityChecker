@@ -21,4 +21,5 @@ class Controller:
         urls = self.file_reader.read_lines()
         soup_list = self.html_handler.scrape_html(urls)
         products = self.html_handler.get_products(soup_list)
-        return self.alert.send("Below products are in stock:\n" + str(products))
+        html_response = self.html_handler.format_results(products)
+        return self.alert.send(html_response)

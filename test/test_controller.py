@@ -19,21 +19,20 @@ def test_process_calls_get_products_with_soup_list(controller, read_lines, scrap
     controller.html_handler.get_products.assert_called_with(['<p>page 1</p>', '<p>page 2</p>'])
 
 
-def test_process_calls_alert_send_with_product_list(controller, read_lines, scrape_html, get_products, alert_send):
+def test_process_calls_alert_send_with_html_response(controller, read_lines, scrape_html, get_products, format_results, alert_send):
     controller.process()
-    products_string = str([{'name': 'product 1'}, {'name': 'product 2'}])
-    controller.alert.send.assert_called_with("Below products are in stock:\n" + products_string)
+    controller.alert.send.assert_called_with("<p>Test html</p>")
 
 
-def test_process_returns_response(controller, read_lines, scrape_html, get_products, alert_send):
+def test_process_returns_response(controller, read_lines, scrape_html, get_products, format_results, alert_send):
     response = controller.process()
     assert response == 'SNS alert sent'
 
 
-@pytest.mark.skip('code returns error instead of raising')
-def test_process_read_lines_raises_io_error_when_file_not_found(controller):
-    with pytest.raises(IOError):
-        controller.process()
+# @pytest.mark.skip('code returns error instead of raising')
+# def test_process_read_lines_raises_io_error_when_file_not_found(controller):
+#     with pytest.raises(IOError):
+#         controller.process()
 
 
 def test_process_read_lines_returns_error_when_file_not_found(controller, read_lines_exception):
@@ -66,6 +65,13 @@ def get_products(controller):
     products = [{'name': 'product 1'}, {'name': 'product 2'}]
     controller.html_handler.get_products = Mock(return_value=products)
     return controller.html_handler.get_products
+
+
+@pytest.fixture
+def format_results(controller):
+    html_response = "<p>Test html</p>"
+    controller.html_handler.format_results = Mock(return_value=html_response)
+    return controller.html_handler.format_results
 
 
 @pytest.fixture
