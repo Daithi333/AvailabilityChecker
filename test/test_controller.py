@@ -1,44 +1,81 @@
-from unittest.mock import Mock
-
+from unittest.mock import Mock, patch
 import pytest
 
 from prod.controller import Controller
 
 
-def test_process_call_to_filereader_returns_url_list():
-    return Controller()
+def test_process_calls_read_lines(controller, read_lines):
     controller.process()
-    assert controller.urls[0] == "https://www.tesco.com/groceries/en-GB/search?query=Antibacterial%20wipes\n"
-    assert controller.urls[1] == "https://www.tesco.com/groceries/en-GB/search?query=antibacterial%20handwash\n"
+    read_lines.assert_called()
 
 
-def test_process_calls_scrape_html_with_url_list(controller):
-    controller.html_handler.scrape_html = Mock()
+def test_process_calls_scrape_html_called_with_url_list(controller, read_lines, scrape_html):
     controller.process()
-    controller.html_handler.scrape_html.assert_called_with(controller.urls)
+    controller.html_handler.scrape_html.assert_called_with(['url1', 'url2'])
 
-def test_process_calls_get_products_with_soup_list(controller):
-    soup_list = ['page1', 'page2']
-    controller.html_handler.scrape_html = Mock(return_value=soup_list)
+
+def test_process_calls_get_products_with_soup_list(controller, read_lines, scrape_html, get_products):
     controller.process()
-    controller.html_handler.get_products.assert_called_with(soup_list)
+    controller.html_handler.get_products.assert_called_with(['<p>page 1</p>', '<p>page 2</p>'])
+
+
+def test_process_calls_alert_send_with_product_list(controller, read_lines, scrape_html, get_products, alert_send):
+    controller.process()
+    products_string = str([{'name': 'product 1'}, {'name': 'product 2'}])
+    controller.alert.send.assert_called_with("Below products are in stock:\n" + products_string)
+
+
+def test_process_returns_response(controller, read_lines, scrape_html, get_products, alert_send):
+    response = controller.process()
+    assert response == 'SNS alert sent'
+
+
+@pytest.mark.skip('code returns error instead of raising')
+def test_process_read_lines_raises_io_error_when_file_not_found(controller):
+    with pytest.raises(IOError):
+        controller.process()
+
+
+def test_process_read_lines_returns_error_when_file_not_found(controller, read_lines_exception):
+    response = controller.process()
+    assert response == ("[Errno 2] No such file or directory: 'test.txt'")
 
 
 @pytest.fixture
 def controller():
-    return Controller()
+    with patch('boto3.client'):
+        controller = Controller()
+    return controller
 
 
 @pytest.fixture
-def file_handler(controller):
-    return Mock(controller.file_reader)
+def read_lines(controller):
+    controller.file_reader.read_lines = Mock(return_value=['url1', 'url2'])
+    return controller.file_reader.read_lines
 
 
 @pytest.fixture
-def html_handler(controller):
-    return Mock(controller.html_handler)
+def scrape_html(controller):
+    soup_list = ['<p>page 1</p>', '<p>page 2</p>']
+    controller.html_handler.scrape_html = Mock(return_value=soup_list)
+    return controller.html_handler.scrape_html
 
 
 @pytest.fixture
-def alert(controller):
-    return Mock(controller.alert)
+def get_products(controller):
+    products = [{'name': 'product 1'}, {'name': 'product 2'}]
+    controller.html_handler.get_products = Mock(return_value=products)
+    return controller.html_handler.get_products
+
+
+@pytest.fixture
+def alert_send(controller):
+    controller.alert.send = Mock(return_value='SNS alert sent')
+    return controller.alert.send
+
+
+@pytest.fixture
+def read_lines_exception(controller):
+    exception = Exception("[Errno 2] No such file or directory: 'test.txt'")
+    controller.file_reader.read_lines = Mock(side_effect=exception)
+    return controller.file_reader.read_lines

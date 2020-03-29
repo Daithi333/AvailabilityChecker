@@ -12,15 +12,13 @@ class Controller:
 
     def process(self):
         try:
-            self._processing_steps()
+            return self._processing_steps()
         except Exception as e:
             print(str(e))
-            return e
+            return str(e)
 
     def _processing_steps(self):
         urls = self.file_reader.read_lines()
         soup_list = self.html_handler.scrape_html(urls)
         products = self.html_handler.get_products(soup_list)
         return self.alert.send("Below products are in stock:\n" + str(products))
-
-

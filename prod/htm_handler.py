@@ -19,17 +19,23 @@ class HtmlHandler:
         for soup in soup_list:
             panels = soup.find_all('li', {'class': 'product-list--list-item'})
             for panel in panels:
-                name = panel.find('h3').get_text().strip()
-                image = panel.find('img', {'class': 'product-image'})
-                info = panel.find('div', {'class': 'product-info-message'}).get_text().strip()
-
-                product = {
-                    'name': name,
-                    'url': image['src'],
-                    'info': info
-                }
+                product = self._extract_product_info(panel)
                 products.append(product)
         return products
+
+    def _extract_product_info(self, panel):
+        name = panel.find('h3').get_text().strip()
+        image = panel.find('img', {'class': 'product-image'})['src']
+        info = panel.find('div', {'class': 'product-info-message'}).get_text().strip()
+        url = panel.find('h3').find('a')['href']
+        product = {
+            'name': name,
+            'image': image,
+            'info': info,
+            'url': url
+        }
+        return product
     
-    def format_results(self, results):
+    def _format_results(self, products):
+
         pass
