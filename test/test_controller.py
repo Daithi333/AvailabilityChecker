@@ -11,23 +11,28 @@ def test_process_calls_read_lines(controller, read_lines):
 
 def test_process_calls_scrape_html_called_with_url_list(controller, read_lines, scrape_html):
     controller.process()
-    controller.html_handler.scrape_html.assert_called_with(['url1', 'url2'])
+    controller.html_extractor.scrape_html.assert_called_with(['url1', 'url2'])
 
 
 def test_process_calls_get_products_with_soup_list(controller, read_lines, scrape_html, get_products):
     controller.process()
-    controller.html_handler.get_products.assert_called_with(['<p>page 1</p>', '<p>page 2</p>'])
+    controller.html_extractor.get_products_tesco.assert_called_with(['<p>page 1</p>', '<p>page 2</p>'])
+
+
+def test_process_calls_format_response_string_with_products_list(controller, read_lines, scrape_html, products, get_products, construct_string):
+    controller.process()
+    controller.response_formatter.construct_string.assert_called_with(products)
 
 
 @pytest.mark.skip('html response no longer being sent')
-def test_process_calls_alert_send_with_html_response(controller, read_lines, scrape_html, get_products, format_results, alert_send):
+def test_process_calls_alert_send_with_html_response(controller, read_lines, scrape_html, get_products, construct_html, alert_send):
     controller.process()
     controller.alert.send.assert_called_with("<p>Test html</p>")
 
 
-def test_process_calls_alert_send_with_formatted_response(controller, read_lines, scrape_html, get_products, alert_send):
+def test_process_calls_alert_send_with_formatted_response(controller, read_lines, scrape_html, get_products, construct_string, alert_send):
     controller.process()
-    controller.alert.send.assert_called_with("The following products are available:\n\nproduct 1\n£0.01\nproduct1url.com\n\nproduct 2\n£0.02\nproduct2url.com\n\n")
+    controller.alert.send.assert_called_with("Products available:\n\nproduct1\n£0.01\nproduct1url.com\n\n")
 
 
 def test_process_returns_response(controller, read_lines, scrape_html, get_products, alert_send):
@@ -62,25 +67,36 @@ def read_lines(controller):
 @pytest.fixture
 def scrape_html(controller):
     soup_list = ['<p>page 1</p>', '<p>page 2</p>']
-    controller.html_handler.scrape_html = Mock(return_value=soup_list)
-    return controller.html_handler.scrape_html
+    controller.html_extractor.scrape_html = Mock(return_value=soup_list)
+    return controller.html_extractor.scrape_html
 
 
 @pytest.fixture
-def get_products(controller):
-    products = [
+def products(controller):
+    return [
         {'name': 'product 1', 'price': '£0.01', 'url': 'product1url.com'},
         {'name': 'product 2', 'price': '£0.02', 'url': 'product2url.com'}
     ]
-    controller.html_handler.get_products = Mock(return_value=products)
-    return controller.html_handler.get_products
 
 
 @pytest.fixture
-def format_results(controller):
+def get_products(controller, products):
+    controller.html_extractor.get_products_tesco = Mock(return_value=products)
+    return controller.html_extractor.get_products_tesco
+
+
+@pytest.fixture
+def construct_html(controller):
     html_response = "<p>Test html</p>"
-    controller.html_handler.format_results = Mock(return_value=html_response)
-    return controller.html_handler.format_results
+    controller.response_formatter.construct_html = Mock(return_value=html_response)
+    return controller.response_formatter.construct_html
+
+
+@pytest.fixture
+def construct_string(controller):
+    string_response = "Products available:\n\nproduct1\n£0.01\nproduct1url.com\n\n"
+    controller.response_formatter.construct_string = Mock(return_value=string_response)
+    return controller.response_formatter.construct_string
 
 
 @pytest.fixture

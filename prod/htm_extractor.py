@@ -3,7 +3,7 @@ import urllib.request as request
 from bs4 import BeautifulSoup
 
 
-class HtmlHandler:
+class HtmlExtractor:
 
     def scrape_html(self, urls):
         soup_list = []
@@ -14,17 +14,17 @@ class HtmlHandler:
             soup_list.append(soup)
         return soup_list
 
-    def get_products(self, soup_list):
+    def get_products_tesco(self, soup_list):
         products = []
         for soup in soup_list:
             panels = soup.find_all('li', {'class': 'product-list--list-item'})
             for panel in panels:
-                product = self._extract_product_info(panel)
+                product = self._extract_products_tesco(panel)
                 if product is not None:
                     products.append(product)
         return products
 
-    def _extract_product_info(self, panel):
+    def _extract_products_tesco(self, panel):
         price = panel.find('div', {'class': 'price-per-sellable-unit'}) or None
         if price is None:
             return
@@ -41,35 +41,3 @@ class HtmlHandler:
             'url': url
         }
         return product
-
-    def format_results(self, products):
-        products_html = self._format_products(products)
-
-        html_response = """\
-        <html>
-        <head>
-        </head>
-        <body>
-        <h2>The following products are available:</h2>
-        <table>
-        <tr>
-        <th>Product</th>
-        <th>Price</th>
-        <th>Link</th>
-        </tr>%s
-        </table>
-        </body>
-        </html>
-        """ % products_html
-        return html_response
-
-    def _format_products(self, products):
-        products_html = """"""
-        for product in products:
-            products_html += """
-        <tr>
-        <td>%s</td>
-        <td>%s</td>
-        <td><a href="%s">View</a></td>
-        </tr>""" % (product['name'], product['price'], product['url'])
-        return products_html
