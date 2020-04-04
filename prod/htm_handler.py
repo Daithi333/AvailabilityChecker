@@ -60,7 +60,7 @@ class HtmlHandler:
         </table>
         </body>
         </html>
-        """ % (products_html)
+        """ % products_html
         return html_response
 
     def _format_products(self, products):

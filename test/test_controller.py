@@ -19,20 +19,26 @@ def test_process_calls_get_products_with_soup_list(controller, read_lines, scrap
     controller.html_handler.get_products.assert_called_with(['<p>page 1</p>', '<p>page 2</p>'])
 
 
+@pytest.mark.skip('html response no longer being sent')
 def test_process_calls_alert_send_with_html_response(controller, read_lines, scrape_html, get_products, format_results, alert_send):
     controller.process()
     controller.alert.send.assert_called_with("<p>Test html</p>")
 
 
-def test_process_returns_response(controller, read_lines, scrape_html, get_products, format_results, alert_send):
+def test_process_calls_alert_send_with_formatted_response(controller, read_lines, scrape_html, get_products, alert_send):
+    controller.process()
+    controller.alert.send.assert_called_with("The following products are available:\n\nproduct 1\n£0.01\nproduct1url.com\n\nproduct 2\n£0.02\nproduct2url.com\n\n")
+
+
+def test_process_returns_response(controller, read_lines, scrape_html, get_products, alert_send):
     response = controller.process()
     assert response == 'SNS alert sent'
 
 
-# @pytest.mark.skip('code returns error instead of raising')
-# def test_process_read_lines_raises_io_error_when_file_not_found(controller):
-#     with pytest.raises(IOError):
-#         controller.process()
+@pytest.mark.skip('code returns error instead of raising')
+def test_process_read_lines_raises_io_error_when_file_not_found(controller):
+    with pytest.raises(IOError):
+        controller.process()
 
 
 def test_process_read_lines_returns_error_when_file_not_found(controller, read_lines_exception):
@@ -62,7 +68,10 @@ def scrape_html(controller):
 
 @pytest.fixture
 def get_products(controller):
-    products = [{'name': 'product 1'}, {'name': 'product 2'}]
+    products = [
+        {'name': 'product 1', 'price': '£0.01', 'url': 'product1url.com'},
+        {'name': 'product 2', 'price': '£0.02', 'url': 'product2url.com'}
+    ]
     controller.html_handler.get_products = Mock(return_value=products)
     return controller.html_handler.get_products
 

@@ -21,5 +21,11 @@ class Controller:
         urls = self.file_reader.read_lines()
         soup_list = self.html_handler.scrape_html(urls)
         products = self.html_handler.get_products(soup_list)
-        html_response = self.html_handler.format_results(products)
-        return self.alert.send(html_response)
+        formatted_response = self._format_response(products)
+        return self.alert.send(formatted_response)
+
+    def _format_response(self, products):
+        formatted_response = "The following products are available:\n\n"
+        for product in products:
+            formatted_response += product['name'] + "\n" + product['price'] + "\n" + product['url'] + "\n\n"
+        return formatted_response
