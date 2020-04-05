@@ -10,4 +10,5 @@ class FileReader:
         for line in open_file:
             lines.append(line)
         open_file.close()
+        print(len(lines) + ' urls read from file')
         return lines

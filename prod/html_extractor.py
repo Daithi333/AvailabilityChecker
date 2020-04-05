@@ -12,6 +12,7 @@ class HtmlExtractor:
             html = response.read()
             soup = BeautifulSoup(html, 'html.parser')
             soup_list.append(soup)
+        print(len(soup_list) + ' soup entries retrieved')
         return soup_list
 
     def get_products_tesco(self, soup_list):
@@ -71,4 +72,5 @@ class HtmlExtractor:
             'price': price,
             'url': None
         }
+        print(product)
         return product

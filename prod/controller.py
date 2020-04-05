@@ -1,6 +1,6 @@
 from prod.alert import Alert
 from prod.file_reader import FileReader
-from prod.htm_extractor import HtmlExtractor
+from prod.html_extractor import HtmlExtractor
 from prod.response_formatter import ResponseFormatter
 
 

@@ -6,7 +6,7 @@ import pytest
 
 from bs4 import BeautifulSoup
 
-from prod.htm_extractor import HtmlExtractor
+from prod.html_extractor import HtmlExtractor
 
 
 def test_html_scraper_calls_request_urlopen_with_urls(html_extractor, soup_stub, request_urlopen):
