@@ -12,6 +12,8 @@ bs4/
 # pycharm
 .idea
 
+.zip
+
 # Distribution / packaging
 .Python
 build/

@@ -16,7 +16,7 @@ def test_process_calls_scrape_html_called_with_url_list(controller, read_lines, 
 
 def test_process_calls_get_products_with_soup_list(controller, read_lines, scrape_html, get_products):
     controller.process()
-    controller.html_extractor.get_products_tesco.assert_called_with(['<p>page 1</p>', '<p>page 2</p>'])
+    controller.html_extractor.get_products_amazon.assert_called_with(['<p>page 1</p>', '<p>page 2</p>'])
 
 
 def test_process_calls_format_response_string_with_products_list(controller, read_lines, scrape_html, products, get_products, construct_string):
@@ -81,8 +81,8 @@ def products(controller):
 
 @pytest.fixture
 def get_products(controller, products):
-    controller.html_extractor.get_products_tesco = Mock(return_value=products)
-    return controller.html_extractor.get_products_tesco
+    controller.html_extractor.get_products_amazon = Mock(return_value=products)
+    return controller.html_extractor.get_products_amazon
 
 
 @pytest.fixture

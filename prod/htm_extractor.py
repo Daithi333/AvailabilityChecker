@@ -15,16 +15,19 @@ class HtmlExtractor:
         return soup_list
 
     def get_products_tesco(self, soup_list):
+        """
+        Tesco urls are search results with multiple products in a list
+        """
         products = []
         for soup in soup_list:
             panels = soup.find_all('li', {'class': 'product-list--list-item'})
             for panel in panels:
-                product = self._extract_products_tesco(panel)
+                product = self._extract_product_info_tesco(panel)
                 if product is not None:
                     products.append(product)
         return products
 
-    def _extract_products_tesco(self, panel):
+    def _extract_product_info_tesco(self, panel):
         price = panel.find('div', {'class': 'price-per-sellable-unit'}) or None
         if price is None:
             return
@@ -39,5 +42,33 @@ class HtmlExtractor:
             'image': image,
             'price': price,
             'url': url
+        }
+        return product
+
+    def get_products_amazon(self, soup_list):
+        """
+        Amazon Pantry urls are for single products
+        """
+        products = []
+        for soup in soup_list:
+            panel = soup.find('div', {'id': 'ppd'})
+            product = self._extract_product_info_amazon(panel)
+            if product is not None:
+                products.append(product)
+        return products
+
+    def _extract_product_info_amazon(self, panel):
+        price = panel.find('span', {'id': 'priceblock_ourprice'}).get_text().strip() or None
+        if price is None:
+            return
+        name = panel.find('div', {'id': 'title_feature_div'}).get_text().strip()
+        image_container = panel.find('div', {'id': 'main-image-container'})
+        image = image_container.find('img')['src']
+
+        product = {
+            'name': name,
+            'image': image,
+            'price': price,
+            'url': None
         }
         return product
