@@ -9,16 +9,15 @@ class HtmlExtractor:
         soup_list = []
         for url in urls:
             response = request.urlopen(url)
+            if response is None:
+                continue
             html = response.read()
             soup = BeautifulSoup(html, 'html.parser')
             soup_list.append(soup)
-        print(len(soup_list) + ' soup entries retrieved')
+        print('%s soup entries retrieved' % len(soup_list))
         return soup_list
 
     def get_products_tesco(self, soup_list):
-        """
-        Tesco urls are search results with multiple products in a list
-        """
         products = []
         for soup in soup_list:
             panels = soup.find_all('li', {'class': 'product-list--list-item'})
@@ -47,9 +46,6 @@ class HtmlExtractor:
         return product
 
     def get_products_amazon(self, soup_list):
-        """
-        Amazon Pantry urls are for single products
-        """
         products = []
         for soup in soup_list:
             panel = soup.find('div', {'id': 'ppd'})
