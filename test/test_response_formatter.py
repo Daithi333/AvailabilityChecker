@@ -1,6 +1,6 @@
 import pytest
 
-from prod.response_formatter import ResponseFormatter
+from app.response_formatter import ResponseFormatter
 
 
 def test_construct_html(response_formatter):

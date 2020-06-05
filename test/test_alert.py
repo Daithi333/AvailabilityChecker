@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch
 import pytest
 
-from prod.alert import Alert
+from app.alert import Alert
 
 
 def test_alert_send_calls_sns_publish_with_message(alert):

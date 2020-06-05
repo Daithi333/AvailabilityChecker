@@ -1,6 +1,6 @@
 from unittest.mock import patch, mock_open
 
-from prod.file_reader import FileReader
+from app.file_reader import FileReader
 
 
 def test_builtin_open_called_with_filename():

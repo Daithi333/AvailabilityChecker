@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch
 import pytest
 
-from prod.controller import Controller
+from app.controller import Controller
 
 
 def test_process_calls_read_lines(controller, read_lines):

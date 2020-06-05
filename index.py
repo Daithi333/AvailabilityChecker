@@ -1,4 +1,4 @@
-from prod.controller import Controller
+from app.controller import Controller
 
 
 def handler(event, context):

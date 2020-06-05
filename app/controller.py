@@ -1,7 +1,7 @@
-from prod.alert import Alert
-from prod.file_reader import FileReader
-from prod.html_extractor import HtmlExtractor
-from prod.response_formatter import ResponseFormatter
+from app.alert import Alert
+from app.file_reader import FileReader
+from app.html_extractor import HtmlExtractor
+from app.response_formatter import ResponseFormatter
 
 
 class Controller:
