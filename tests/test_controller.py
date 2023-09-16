@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch
 import pytest
 
-from app.controller import Controller
+from controller import Controller
 
 
 def test_process_calls_read_lines(controller, read_lines):
@@ -48,13 +48,13 @@ def test_process_read_lines_raises_io_error_when_file_not_found(controller):
 
 def test_process_read_lines_returns_error_when_file_not_found(controller, read_lines_exception):
     response = controller.process()
-    assert response == ("[Errno 2] No such file or directory: 'test.txt'")
+    assert response == "[Errno 2] No such file or directory: 'tests.txt'"
 
 
 @pytest.fixture
 def controller():
     with patch('boto3.client'):
-        controller = Controller()
+        controller = Controller('test.txt')
     return controller
 
 
@@ -107,6 +107,6 @@ def alert_send(controller):
 
 @pytest.fixture
 def read_lines_exception(controller):
-    exception = Exception("[Errno 2] No such file or directory: 'test.txt'")
+    exception = Exception("[Errno 2] No such file or directory: 'tests.txt'")
     controller.file_reader.read_lines = Mock(side_effect=exception)
     return controller.file_reader.read_lines

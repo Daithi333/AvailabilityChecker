@@ -1,13 +1,13 @@
-from app.alert import Alert
-from app.file_reader import FileReader
-from app.html_extractor import HtmlExtractor
-from app.response_formatter import ResponseFormatter
+from alert import Alert
+from file_reader import FileReader
+from html_extractor import HtmlExtractor
+from response_formatter import ResponseFormatter
 
 
 class Controller:
 
-    def __init__(self):
-        self.file_reader = FileReader('search_urls.txt')
+    def __init__(self, file_path: str):
+        self.file_reader = FileReader(file_path)
         self.html_extractor = HtmlExtractor()
         self.response_formatter = ResponseFormatter()
         self.alert = Alert()

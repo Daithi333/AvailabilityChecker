@@ -1,12 +1,12 @@
 import pytest
 
-from app.response_formatter import ResponseFormatter
+from response_formatter import ResponseFormatter
 
 
 def test_construct_html(response_formatter):
     products = [
-        {'name': 'product1', 'price': '£0.01', 'url': 'product1@test.com'},
-        {'name': 'product2', 'price': '£0.02', 'url': 'product2@test.com'}
+        {'name': 'product1', 'price': '£0.01', 'url': 'product1@tests.com'},
+        {'name': 'product2', 'price': '£0.02', 'url': 'product2@tests.com'}
     ]
 
     html_response = """\
@@ -24,12 +24,12 @@ def test_construct_html(response_formatter):
         <tr>
         <td>product1</td>
         <td>£0.01</td>
-        <td><a href="product1@test.com">View</a></td>
+        <td><a href="product1@tests.com">View</a></td>
         </tr>
         <tr>
         <td>product2</td>
         <td>£0.02</td>
-        <td><a href="product2@test.com">View</a></td>
+        <td><a href="product2@tests.com">View</a></td>
         </tr>
         </table>
         </body>
