@@ -1,4 +1,6 @@
+import os
 
-config = {
-    'TopicArn': 'arn:aws:sns:eu-west-1:757607970807:ProductAlert'
-}
+
+class Config:
+
+    PRODUCT_ALERT_TOPIC_ARN = os.getenv("PRODUCT_ALERT_TOPIC_ARN")

@@ -1,4 +1,5 @@
 from alert import Alert
+from config import Config
 from file_reader import FileReader
 from html_extractor import HtmlExtractor
 from response_formatter import ResponseFormatter
@@ -24,4 +25,4 @@ class Controller:
         soup_list = self.html_extractor.scrape_html(urls)
         products = self.html_extractor.get_products_tesco(soup_list)
         formatted_response = self.response_formatter.construct_string(products)
-        return self.alert.send(formatted_response)
+        return self.alert.send(Config.PRODUCT_ALERT_TOPIC_ARN, formatted_response)

@@ -24,20 +24,21 @@ Run `python -m pytest -v` in the terminal
 
 3. Package app code:
     ```
-    cp -r app/* build/   # Assuming your code resides in the 'app' directory
+    cp -r app/* build/
     cd build
-    zip -r ../function.zip .
+    zip -r ../availability_checker.zip .
     ```
 
-    OR on Windows: `xcopy app\* build\ /E /I` 
+    OR on Windows: 
 
-4. Zip build dir:
-
-    `zip -r function.zip build/`
-
-    OR on Windows: `cd build` and `powershell Compress-Archive -Path * -DestinationPath ..\function.zip` 
+   ```
+   xcopy app\* build\ /E /I
+   cd build
+   powershell Compress-Archive -Path * -DestinationPath ..\availability_checker.zip
+   ```
 
 
 ### TODOs
 
  - Use S3 bucket for the search_urls.txt
+ - Async process urls

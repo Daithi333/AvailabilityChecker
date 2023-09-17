@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "terraform-backend"
+    bucket = "daithi-terraform-backend"
     key    = "availability-checker/terraform.tfstate"
     region = "eu-west-1"
   }
@@ -10,23 +10,31 @@ provider "aws" {
   region = "eu-west-1"
 }
 
-resource "aws_s3_bucket" "lambda_code_bucket" {
-  bucket = "daithi-code-bucket"
-  acl    = "private"
+resource "aws_sns_topic" "product_alert" {
+  name = "product-alert"
 }
 
-resource "aws_s3_bucket_object" "lambda_code" {
-  bucket = aws_s3_bucket.lambda_code_bucket.bucket
-  key    = "availability_checker.zip"
-  source = "../availability_checker.zip"
-  etag   = filemd5("../availability_checker.zip")
+resource "aws_sns_topic_subscription" "product_alert_email" {
+  topic_arn = aws_sns_topic.product_alert.arn
+  protocol  = "email"
+  endpoint  = "daithi@hotmail.co.uk"
+}
 
-  depends_on = [aws_s3_bucket.lambda_code_bucket]
+data  "aws_iam_policy_document" "sns_publish" {
+  statement {
+    actions   = ["sns:Publish"]
+    resources = [aws_sns_topic.product_alert.arn]
+  }
+}
+
+resource "aws_iam_policy" "sns_publish_policy" {
+  name        = "LambdaSNSTopicPublish"
+  description = "Allows Lambda to publish to SNS topics"
+  policy      = data.aws_iam_policy_document.sns_publish.json
 }
 
 resource "aws_iam_role" "lambda_role" {
   name = "availability-checker-lambda-role"
-
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -41,22 +49,33 @@ resource "aws_iam_role" "lambda_role" {
   })
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_sns_publish_attachment" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = aws_iam_policy.sns_publish_policy.arn
+}
+
 resource "aws_lambda_function" "availability_checker" {
+  filename      = "${path.module}/../availability_checker.zip"
   function_name = "availability_checker"
-  handler       = "app.main.handler"
+  role          = aws_iam_role.lambda_role.arn
+  handler       = "main.handler"
+
   runtime       = "python3.11"
+  timeout       = 30
 
-  role = aws_iam_role.lambda_role.arn
-
-  # Zip should already be uploaded to S3
-  s3_bucket = aws_s3_bucket.lambda_code_bucket.bucket
-  s3_key    = aws_s3_bucket_object.lambda_code.key
+  environment {
+    variables = {
+      PRODUCT_ALERT_TOPIC_ARN = aws_sns_topic.product_alert.arn
+    }
+  }
 }
 
 resource "aws_cloudwatch_event_rule" "daily_run" {
   name                = "run-daily"
   description         = "Run Lambda function daily"
   schedule_expression = "rate(1 day)"
+
+  is_enabled = false  # Disabled for now
 }
 
 resource "aws_cloudwatch_event_target" "check_availability" {

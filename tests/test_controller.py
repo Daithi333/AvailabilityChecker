@@ -32,7 +32,7 @@ def test_process_calls_alert_send_with_html_response(controller, read_lines, scr
 
 def test_process_calls_alert_send_with_formatted_response(controller, read_lines, scrape_html, get_products, construct_string, alert_send):
     controller.process()
-    controller.alert.send.assert_called_with("Products available:\n\nproduct1\n£0.01\nproduct1url.com\n\n")
+    controller.alert.send.assert_called_with(None, "Products available:\n\nproduct1\n£0.01\nproduct1url.com\n\n")
 
 
 def test_process_returns_response(controller, read_lines, scrape_html, get_products, alert_send):
